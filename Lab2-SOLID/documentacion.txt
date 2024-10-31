@@ -1,0 +1,40 @@
+Aquí documento las violaciones a SOLID que se encontraron y las posibles soluciones.
+
+1. (SRP)
+La clase SystemManager no respeta el principio de responsabilidad única.
+
+Esta clase está implementando múltiples funcionalidades: procesar orden, verificación de inventario, procesamiento de pagos, etc.
+Para respetar SRP crearemos clases para cada funcionalidad.
+Crearía las siguientes clases:
+
+Una clase Order, con los atributos que se usan en el ejemplo, como type, quantity, amount.
+Una clase OrderProcesser, que implementaría el método processOrder.
+Una interfaz PaymentProcesser, que definiría el método processPayment.
+Una clase Notifier.
+Una clase InventoryManager, para el método que verifica la disponibilidad de inventario.
+Una clase OrderRepository, para operaciones como la de actualizar el status de una orden que requiere conexión a una base de datos.
+
+2. (LSP e ISP)
+
+Para respetar el principio de sustitución de Liskov, y el de segregación de dependencias:
+
+Crearía una Interfaz, para el procesamiento de pagos.
+
+Luciría de la siguiente forma:
+
+Interface PaymentProcessor {
+    void ProcessPayment(order)
+}
+
+Y tendríamos dos clases, StandardPaymentProcessor y ExpressPaymentProcessor, que implementarían dicha interfaz.
+Estas dos clases DEBEN implementar el método ProcessPayment.
+
+3. (OCP)
+
+El original no respeta el principio OCP en las líneas 3-8, en que hace una serie de ifs para procesar la orden según el tipo.
+Para respetar este principio, en la versión modificada, crearía un OrderProcessorFactory, que recibiría una orden y según el tipo devolvería el procesador de pago del tipo adecuado.
+
+4. (DIP)
+
+Para respetar el principio de inversión de inversión de dependencias: se crearán interfaces para las clases que se incluyen como dependencias de otras. Por ejemplo, los payment services, el notifier, el inventory 
+

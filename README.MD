@@ -1,1 +1,1 @@
-Hola :) FEMSA
+Lab2: El archivo original.txt es el original, sin modificaciones. En documentacion.txt se explican las violaciones a principios y los cambios sugeridos para respetar SOLID. En modified.txt se pone el código sugerido.

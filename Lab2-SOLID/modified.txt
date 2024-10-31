@@ -1,0 +1,120 @@
+interface IPaymentProcessor {
+    void processPayment(order: Order) : boolean;
+}
+
+interface IPaymentService {
+    void process(orderAmount: int)
+}
+
+interface IExpressPaymenService {
+    void process(orderAmount: int, priority: int)
+}
+
+class PaymentService implements IPaymentService {...}
+
+class ExpressPaymentService implements IExpressPaymenService {...}
+
+class StandardPaymentProcessor implements IPaymentProcessor {
+    private paymentService : IPaymentService
+
+    constructor(paymentService: IPaymentService) {
+        this.paymentService = paymentService
+    }
+
+    processPayment(order: Order) {
+        if (paymentService.process(order.amount)) {
+            return true;
+        } else {
+            throw new Error("Payment failed");
+        }
+    }
+}
+
+class ExpressPaymentProcessor implements IPaymentProcessor {
+    private expressPaymentService : IExpressPaymentService
+
+    constructor(expressPaymentService: IExpressPaymentService) {
+        this.expressPaymentService = expressPaymentService
+    }
+
+    processPayment(order: Order) {
+        if (expressPaymentService.process(order.amount, priority)) {
+            return true;
+        } else {
+            throw new Error("Payment failed");
+        }
+    }
+}
+
+class PaymentProcessorFactory {
+    public static IPaymentProcessor getPaymentProcessor(type: OrderType) {
+        switch (type) {
+            case "standard" :
+                return new StandardPaymentProcessor(new PaymentService());
+            case "express" :
+                return new ExpressPaymentProcessor(new ExpressPaymentService());
+            default:
+                throw new Error("Order type not supported")
+        }
+    }
+}
+
+interface IInventoryManager {
+    verifyInventory(order: Order)
+}
+
+class InventoryManager implements IInventoryManager {
+    verifyInventory(order: Order) {
+        // Checks inventory levels
+        if (inventory < order.quantity) {
+            throw new Error("Out of stock");
+        }
+    }
+}
+
+interface IOrderRepository {
+    ...
+    updateOrderStatus(order: Order, status: OrderStatus)
+}
+
+class OrderRepository implements IOrderRepository{
+    updateOrderStatus(order, status) {
+        // Updates the order status in the database
+        database.updateOrderStatus(order.id, status);
+    }
+}
+
+interface INotifier {
+    notifyCustomer(order: Order)
+}
+
+interface Notifier implements INotifier {
+    emailService : IEmailService
+
+    notifyCustomer(order: Order) {
+        // Sends an email notification to the customer
+        emailService.sendEmail(order.customerEmail, "Your order has been processed.");
+    }
+}
+
+class SystmemManager {
+    orderRepository: IOrderRepository
+    inventoryManager: IInventoryManager
+    notifier: INotifier
+
+    constructor(repository: IOrderRepository, 
+                inventoryManager: IInventoryManager, 
+                notifier: INotifier) {
+        this.orderRepository = repository;
+        this.inventoryManager = inventoryManager;
+        this.notifier = INotifier;
+    }
+    
+    processOrder(order) {
+        inventoryManager.verifyInventory()
+        paymentProcessor = PaymentProcessorFactory.getPaymentProcessor(order.type)
+        paymentProcessor.processPayment(order)
+        orderRepository.updateOrderStatus(order, "processed")
+        notifier.notifyCustomer(order)
+    }
+}
