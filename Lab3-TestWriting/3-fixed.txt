@@ -1,0 +1,20 @@
+------
+Tampoco es muy claro que es lo que pretende verificar este test. Se crea un UI component de una resolución y luego se reajusta a un tamaño de la misma resolución.
+A diferencia de los dos tests anteriores pareciera que sí está verificando una única funcionalidad. Sin embargo, el título del test no nos indica qué es lo que se pretende probar.
+Para efectos del entregable supondré que lo que interesa probar es la función adjustToScreenSize() (habrá entonces que renombrar el test), y supondré que esta función recibe un parámetro entero indicando el tamaño nuevo.
+Con esta base, aunque el test solo prueba una funcionalidad, no es lo suficientemente exhaustivo pues solo se está probando un posible reajuste. 
+Haremos entonces una prueba parametrizada, para probar la función reajustando a distintos tamaños.
+------
+
+@ParameterizedTest
+@ValueSource( 360, 480, 720, 1024, 1080, 1440 )
+TEST UI_ShouldAdjustScreenSizeSuccessfully(int screenSize) {
+    // Arrange
+    UI_COMPONENT ui = setupUIComponent(1024)
+
+    // Act
+    result = uiComponent.adjustsToScreenSize(screenSize)
+
+    // Assert 
+    ASSERT_TRUE(result, $"UI should adjust to width of {screenSize} pixels")
+}

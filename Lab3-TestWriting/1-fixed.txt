@@ -1,0 +1,38 @@
+------
+
+El test original no define un objetivo claro. Es decir, prueba más de una funcionalidad con un solo test.
+En la versión corregida escribiremos dos tests diferentes: uno para probar la autenticacíon exitosa y uno más para la fallida. 
+Además, deberemos agregar nombres descriptivos a ambos tests, ya que el original no lo tiene.
+Aumentaremos la claridad de la implementación de cada test delimitando las distintas fases del test, i.e., Arrange, act, assert.
+Para asegurarnos de que la combinación de usuario y contraseña existan, tendremos un método SETUP que se ejecute antes de cada test, y que agregue un usuario valido con la contraseña que luego se pasa en el test.
+
+------
+
+@beforeAll
+SETUP
+    addUser("validUser", "validPass")
+ENDSETUP
+
+TEST UserAuthentication_ShouldBeSuccesfulWithValidUserAndPassword
+    // ARRANGE
+    user := "validUser"
+    password := "validPass"
+
+    // ACT
+    result = authenticate(user, password)
+
+    // ASSERT
+    ASSERT_TRUE(result, "Valid user and password should pass authentication")
+END TEST
+
+TEST UserAuthentication_ShouldFailWithIncorrectPassword
+    // ARRANGE
+    user := "validUser"
+    password := "wrongPass"
+
+    // ACT
+    result = authenticate(user, password)
+
+    // ASSERT
+    ASSERT_FALSE(result, "Authentication should fail when password is incorrect")   
+END TEST

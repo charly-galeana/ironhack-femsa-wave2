@@ -1,0 +1,61 @@
+Por el código proporcionado no queda claro el propósito de la función fetchData ni como interactúa con processData. Presento dos opciones posibles dependiendo del enfoque que se le pueda dar a la función fetchData.
+
+------
+OPCION 1
+
+Este test tampoco tiene un objetivo claro. Como en el anterior lo divideremos en dos tests, ya que en el original se está probando el procesamiento exitoso y el procesamiento cuando se encuentra una excepción.
+También agregaremos un nombre descriptivo a cada test.
+La llamada a la función fetchData es ambigua. Para este ejemplo supondremos que es una función dentro de la clase de testeo. Para el test exitoso debería regresar data "valida", que hace que la función process data funcione correctamente, y para el test fallido debería devolver data "inválida" que produce una excepción en el procesamiento.
+Como esto no puede lograrse con una sola función, tendremos dos funciones, fetchValidData que devolverá data válida y fetchInvalidData.
+
+Como en en el primer ejemplo aumentaremos la claridad de la implementación delimitando los pasos del test, arrange, act, assert.
+
+------
+
+TEST DataProcessing_ShouldProcessDataSucessfullyWhenFetchDataIsValid
+    // Arrange
+    data = fetchValidData()
+
+    // Act 
+    processData(data)
+
+    // Assert
+    ASSERT_TRUE(data.processedSuccessfully, "Data should be processed successfully when it is valid.")
+END TEST
+
+TEST DataProcessing_ShouldThrowDataProcessingErrorWhenDataIsInvalid
+    // Arrange
+    data = fetchInvalidData()
+
+    // ASSERT
+    ASSERT_THROWS("Data processing error", () -> {process(data)})
+END TEST
+
+------
+OPCION 2
+
+Si fetchData y processData son en cambio parte de un proceso más amplio, por ejemplo handleDataRequest (que llama tanto a fetchData como a processData), podríamos mockear la llamada a fetchData (ya que no es una funcionalidad que estamos testeando).
+------
+
+TEST DataProcessing_ShouldProcessDataSucessfullyWhenFetchDataIsValid
+    // Arrange
+    dataService = mock(DataService.class)
+    when(dataService.fetchData()).thenReturn("data valida")
+
+    // Act 
+    data = handleDataRequest()
+
+    // Assert
+    ASSERT_TRUE(data.processedSuccessfully, "Data should be processed successfully when it is valid.")
+END TEST
+
+TEST DataProcessing_ShouldThrowDataProcessingErrorWhenDataIsInvalid
+    // Arrange
+    dataService = mock(DataService.class)
+    when(dataService.fetchData()).thenReturn("data inválida")
+
+    // ASSERT
+    ASSERT_THROWS("Data processing error", () -> {handleData()})
+END TEST
+
+------
