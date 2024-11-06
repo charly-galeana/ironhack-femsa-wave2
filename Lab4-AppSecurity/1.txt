@@ -1,0 +1,54 @@
+En el pseudocódigo proporcionado encuentro las siguientes vulnerabilidades:
+
+1.	Logging y monitoreo insuficiente.
+
+Como vimos, este es uno de los riesgos críticos de seguridad que forman parte del top 10 de OWASP. Este ejemplo no tiene logging para intentos de login que fueron fallidos, lo cual puede prevenir fallas de seguridad.
+
+Para mitigar este fallo, agregaremos logging para cada intento fallido
+
+2.	Riesgo de inyección de SQL
+
+Otro de los riesgos que forman parte del top 10 de OWASP son las inyecciones de SQL. En este ejemplo se está haciendo un query directo a una tabla de SQL con el username y contraseña de los parámetros y esto podría ser explotado por un tercero si manipula los valores de dichos parámetros.
+
+Para mitigar este riesgo, como vimos en clase, usaremos consultas de SQL predefinidas que parametrizaremos.
+
+3.	Contraseñas de usuario guardadas en base de datos.
+
+Guardar las contraseñas de usuario directamente en la base de datos expone a los usuarios. Así pues, para mitigar este riesgo se deben guardar las contraseñas una vez que se les haya aplicado un hash. Al momento de autenticar al usuario, la contraseña recibida deberá ser también hasheada.
+
+4.	Vulnerabilidad contra ataques de fuerza bruta
+
+Como también estudiamos en clase, los sistemas de autenticación corren riesgos de ser vulnerados si se permiten múltiples intentos de autenticación. 
+
+Para mitigar este riesgo limitaremos el número de intentos de logueo permitidos, bloqueado temporalmente el acceso si se detectan múltiples intentos.
+
+
+Una versión nueva de esta función, incorporando las mitigaciones mencionadas, podría ser:
+
+FUNCTION authenticateUser(username, password)
+
+	// Se verifica si la cuenta está bloqueada por superar el límite de intentos
+	IF accountLockedAfterMultipleTries(username)
+		RETURN FALSE
+
+	// Aplicar hash a la contraseña recibida
+	hashedPassword = Hash(password)
+
+	// Recuperar el usuario de la base de datos por medio de un query predefinido
+	query =  “SELECT username, password FROM users WHERE username = ?”
+	userEntry = ExcuteParemerizedQuery(query, username)
+
+	// Verificar si existe el usuario
+	IF userEntry == null 
+		logFailedAttempt
+		return false
+
+	IF userEntry.password == hashedPassword
+		return true
+
+	IF ReachedFailedAttemptsLimit
+		lockAccount(username)
+	
+	return false
+
+	// 

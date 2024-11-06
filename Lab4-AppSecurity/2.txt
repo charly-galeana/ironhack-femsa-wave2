@@ -1,0 +1,63 @@
+------------
+
+DEFINE FUNCTION generateJWT(userCredentials):
+  IF validateCredentials(userCredentials):
+    SET tokenExpiration = currentTime + 3600 // Token expires in one hour
+    RETURN encrypt(userCredentials + tokenExpiration, secretKey)
+  ELSE:
+    RETURN error
+
+------------
+
+Diseño de un sistema de autenticación por medio de JWT.
+
+**** Componentes ****
+
+Nuestro sistema de autenticación por medio de JWT tendrá cinco principales componentes:
+
+1. Un servicio de autenticación del usuario: recibirá las credenciales de un usuario y luego de verificar que sean validas (usando, por ejemplo, el sistema del ejercicio 1 de este lab), se generará un token JWT.
+2. Un sistema para validar tokens: Cada request al servicio general deberá contar con un token JWT como parte del header de autorización. Por lo tanto, el token asociado a cada request deberá ser validado por medio de un middleware de validación de tokens.
+3. Revocación de tokens: Cuando termine la sesión de un usuario el token asociado será revocado (haciendo uso de una blocklist de tokens) para que no pueda volver a ser utilizado. El middleware de validación deberá entonces comprobar que el token que se está verificando no haya sido revocado.
+4. Tiempo de expiración y renovación de tokens: Cada token tendrá un tiempo de expiración (de 1 hr dada la descripción del ejemplo) luego del cual no podrá ser reutilizado. El token para una sesión de un usuario podrá ser renovado (refresh) si el tiempo de expiración está cercano pero continúa habiendo actividad, de esta manera no se forza al usuario a reloguearse.
+5. Una algoritmo de firmado por HMAC SHA256 y llave secreta almacenada en un manejador de secretos.
+
+**** Flujo del proceso de autenticación ****
+
+* Se proporcionan las credenciales del usuario.
+
+* Se validan estas credenciales y si la validación es exitosa se genera un nuevo token JWT. En los Claims del token se incluirán el tiempo de creación y expiración del token.
+
+* El token es firmada con una llave secreta generada aleatoriamente.
+
+* Cada vez que se haga un request con el usuario, este request deberá incluir el JWT en los headers de autorización. El token se validará con los siguientes pasos:
+
+    * Se descifra el token usando la llave secreta con que fue firmada.
+
+    * Se verifica la fecha de expiración.
+
+    * Se verifica que el token no haya sido revocado.
+
+* Si la validación de token es exitosa se procede con el request.
+
+* Cuando un usaurio culmina su sesión, el token que tiene es revocado agregándolo a una blocklist para que no pueda ser usado en futuras requests.
+
+* El usuario puede regenerar un nuevo token cuando su sesión está por expirar sin necesidad de inicicar sesión nuevamente.
+
+**** Elementos de seguridad ****
+
+La opción planteada incluye los siguientes elementos y fortalezas de seguridad.
+
+* Con la revocación de token cuando un usuario termina su sesión se previene que agentes maliciosos hagan uso de un token aún valido luego de que un usuario ha terminado de usarlo.
+
+* Con el tiempo de expiración también se previene que un mismo token valido tenga un mal uso, pues tiene un tiempo corto de vida.
+
+* Con el firmado por llave secreta usando algoritmos como los mencionados en clase como (HS256 o RSA) aseguramos que los tokens no pueden ser falsificados sin acceso a la llave secreta, que será almacenada de forma segura.
+
+**** Vulnerabilidades ****
+
+Algunas posibles vulnerabilidades:
+
+* Intercepción o filtrado del token: si un toquen es interceptado un agente malicioso podría hacerse pasar por un usuario autenticado. La forma de mitigarlo es asegurarse de usar el protocolo HTTPS para proteger los tokens durante transmisión de información. El tiempo corto de expiración y la revocación de token (ya incluidas en el diseño propuesto) también mitigan este riesgo.
+
+* Almacenamiento inseguro de tokens por el cliente. Si los tokens no se almacenan de forma segura en el lado del cliente pueden ser interceptados por ataques XSS. 
+

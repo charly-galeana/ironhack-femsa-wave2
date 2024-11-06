@@ -1,0 +1,45 @@
+**** Plan de seguridad de datos ****
+
+El plan debe cumplir lo siguiente:
+
+IMPLEMENT SSL/TLS for all data in transit
+USE encrypted storage solutions for data at rest
+ENSURE all data exchanges comply with HTTPS protocols
+
+Para garantizar la seguridad de la data in transit, la estrategia seguirá las siguientes medidas:
+
+* Se usará la herramienta OpenSSL para generar certificados SSL.
+
+* Toda la data en tránsito (entre solicitudes a endpoints, entre servicios, o entre clientes, por ejemplo) será encriptada por medio de TLS.
+
+* Todos los endpoints de la aplicación usarán HTTPS, y el tráfico HTTP será redirigido a HTTPS para garantizar su encriptación.
+
+* Se configurará renovación automática de los certificados SSL/TLS, para garantizar una conexión segura sin interrupciones.
+
+* Con frecuencia se harán actualizaciones a la versión más reciente de TLS para mitigar vulnerabilidades descubiertas.
+
+* Se usará un Wep Application Firewall para monitorear tráfico inusual que pudiera indicar conexiones inseguras o ataques.
+
+Para asegurar la encriptación de la data en rest, la estrategia seguirá las siguientes medidas:
+
+* La información sensible almacenada en base de datos deberá ser encriptada. Asumiendo que la aplicación usa SQL para sus bases de datos, se usará TDE (Transparent Data Encription).
+
+* Las llaves de encriptación se manejarán con una manager externo: AWS Key Management Service, para guardarlas de forma segura.
+
+* Estas llaves de encriptación deberán ser rotadas/actualizadas con frecuencia.
+
+* Como también se mencionó en el ejericicio 2, los secretos y variables de entorno sensibles se almacenarán en algún manejador de secretos.
+
+* Monitorear con regularidad los logs de tráfico para identificar instancias de intentos de conexión por medio de HTTP.
+
+Para asegurarnos de usar HTTPS en todos los intercambios de información, la estrategia seguirá las siguientes medidas:
+
+* Los servicios del lado de backend se implementarán de tal forma que todas las solicitudes usen HTTPS y las solicitudes que no cumplan este requisito serán rechazadas.
+
+* Monitorear con regularidad los logs de tráfico para identificar instancias de intentos de conexión por medio de HTTP.
+
+Como medidas generales para garantizar los tres puntos anteriores, también:
+
+* La aplicación deberá incluir monitoreo y logging para capturar la información de intentos de conexión.
+
+* Se implementarán tests de penetración frecuentes.
