@@ -1,0 +1,8 @@
+db.posts
+  .find({ status: "active" }, { title: 1, likes: 1 })
+  .sort({ likes: -1 });
+
+db.users.aggregate([
+  { $match: { status: "active" } },
+  { $group: { _id: "$location", totalUsers: { $sum: 1 } } },
+]);

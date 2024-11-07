@@ -1,0 +1,32 @@
+----1----
+
+Como estamos filtrando en primer lugar por el status de los posts, y luego ordenamos por el número de likes, podemos crear un índice compuesto, para abarcar status y ordenar por likes en orden descendiente.
+
+Además, si solo nos interesan los posts con más likes, podemos limitar las columnas que devuelva la query y considerar solo los primeros N posts de la lista ya ordenada. En la propuesta optimizada, devolvemos solo el top 10 de posts.
+
+Esta es la propuesta optimizada:
+
+db.posts.createIndex({ status: 1, likes: -1 });
+
+db.posts
+  .find({ status: "active" }, { title: 1, likes: 1 })
+  .sort({ likes: -1 })
+  .limit(10);
+
+----2----
+
+Se está filtrando por status y agrupando por location. Conviene entonces crear un índice para ambos atributos. 
+
+También se puede hacer sharding de esta tabla por el atributo location, si el set de datos es muy gande. El sharding por location permitirá agregar los resultados de manera más rápida.
+
+Podemos optimizar el pipeline de agregación agregando un project antes del group. De esta forma, si el documento contiene otros fields que son innecesarios para la consulta, se considera solo el field de location.
+
+La versión propuesta con estas optimizaciones sería:
+
+db.users.createIndex({ status: 1, location: 1 });
+
+db.users.aggregate([
+  { $match: { status: "active" } },
+  { $project: { location: 1 } },
+  { $group: { _id: "$location", totalUsers: { $sum: 1 } } },
+]);
