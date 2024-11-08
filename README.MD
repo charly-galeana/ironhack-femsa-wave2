@@ -5,3 +5,5 @@ Lab3 (Testing): Se creó un archivo separado para cada escenario. En el respecti
 Lab4 (AppSecurity): Cada archivo, 1.txt, 2.txt, 3.txt, contiene lo solicitado en el respectivo ejercicio.
 
 Lab5 (DBs): Las propuestas de optimización se incluyen en los archivos 1.sql y 2.txt.
+
+Lab (Docker): El análisis se puede encontrar el archivo .pdf de la carpeta del Lab-6.
