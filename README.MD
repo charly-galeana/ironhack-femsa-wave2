@@ -6,4 +6,6 @@ Lab4 (AppSecurity): Cada archivo, 1.txt, 2.txt, 3.txt, contiene lo solicitado en
 
 Lab5 (DBs): Las propuestas de optimización se incluyen en los archivos 1.sql y 2.txt.
 
-Lab (Docker): El análisis se puede encontrar el archivo .pdf de la carpeta del Lab-6.
+Lab6 (Docker): El análisis se puede encontrar el archivo .pdf de la carpeta del Lab-6.
+
+Lab7 (Design patterns): En el archivo .pdf se encuentra la documentación requerida. Los archivos 1,2,3.cs incluyen códigos de ejemplo para los escenarios repectivos.
