@@ -9,3 +9,5 @@ Lab5 (DBs): Las propuestas de optimización se incluyen en los archivos 1.sql y 
 Lab6 (Docker): El análisis se puede encontrar el archivo .pdf de la carpeta del Lab-6.
 
 Lab7 (Design patterns): En el archivo .pdf se encuentra la documentación requerida. Los archivos 1,2,3.cs incluyen códigos de ejemplo para los escenarios repectivos.
+
+Lab8 (APIs): En el archivo .yaml se encuentran las definiciones de modelo de datos y rutas de endpoints que se puede utilizar en SwaggerHub. En Reporte.pdf se encuentra el breve reporte solicitado.
